@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>OOPS!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/main.css">
+  <link rel="stylesheet" href="style/game.css">
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+
+<!-- Death overlay -->
+<div id="death-ui" class="overlay hidden">
+  <div class="ui-card">
+    <div class="dead-title">OOPS!</div>
+    <div id="death-reason-text" class="death-reason">落下死 — 1回目</div>
+    <div class="score-row">
+      <span class="score-label">スコア</span>
+      <span id="final-score" class="score-value">0 pt</span>
+    </div>
+    <div class="btn-group">
+      <button class="btn-restart" onclick="respawn()">もう一度</button>
+      <a id="btn-share" class="btn-share" href="#" target="_blank" rel="noopener">Xでシェアする</a>
+      <a class="btn-home" href="index.html">ホームに戻る</a>
+    </div>
+  </div>
+</div>
+
+<!-- Cleared overlay -->
+<div id="cleared-ui" class="overlay hidden">
+  <div class="ui-card">
+    <div class="cleared-title">CLEAR!</div>
+    <div class="cleared-subtitle">はじまりの丘</div>
+    <div class="score-row">
+      <span class="score-label">スコア</span>
+      <span id="cleared-score" class="score-value">0 pt</span>
+    </div>
+    <div class="btn-group">
+      <button class="btn-restart" onclick="respawn()">もう一度</button>
+      <a class="btn-home" href="index.html">ホームに戻る</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/stages.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/player.js"></script>
+<script src="js/enemy.js"></script>
+<script src="js/wire.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/game.js"></script>
+
+<script>
+  // Share button text generation
+  document.getElementById('death-ui').addEventListener('transitionend', () => {});
+  window.addEventListener('DOMContentLoaded', () => {
+    const shareBtn = document.getElementById('btn-share');
+    shareBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const deaths = parseInt(localStorage.getItem('oops_deaths') || '0');
+      const text = encodeURIComponent(
+        `死亡回数: ${deaths}回\nステージ: はじまりの丘\n\n#OOPS死にゲー`
+      );
+      window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+    });
+  });
+</script>
+
+</body>
+</html>

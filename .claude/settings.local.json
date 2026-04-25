@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start game.html)",
+      "Bash(start:*)"
+    ]
+  }
+}

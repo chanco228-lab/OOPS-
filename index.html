@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>OOPS! — 死にゲー</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/main.css">
+  <style>
+    body { overflow: auto; }
+  </style>
+</head>
+<body class="menu-page">
+
+<div class="menu-wrap">
+
+  <div class="game-title">OOPS!</div>
+  <div class="game-subtitle">横スクロール死にゲー × スコアアタック</div>
+
+  <div class="stage-list">
+
+    <a class="stage-card" href="game.html?stage=stage_001">
+      <div class="stage-icon">🌿</div>
+      <div class="stage-info">
+        <div class="stage-name">はじまりの丘</div>
+        <div class="stage-meta">
+          <span class="difficulty">★☆☆☆</span>
+          <span class="badge badge-normal">NORMAL</span>
+        </div>
+      </div>
+      <button class="btn-play" onclick="event.preventDefault(); location.href='game.html?stage=stage_001'">
+        あそぶ
+      </button>
+    </a>
+
+    <a class="stage-card" href="game.html?stage=stage_002">
+      <div class="stage-icon">☁️</div>
+      <div class="stage-info">
+        <div class="stage-name">空の回廊</div>
+        <div class="stage-meta">
+          <span class="difficulty">★★☆☆</span>
+          <span class="badge badge-normal">NORMAL</span>
+        </div>
+      </div>
+      <button class="btn-play" onclick="event.preventDefault(); location.href='game.html?stage=stage_002'">
+        あそぶ
+      </button>
+    </a>
+
+    <!-- Future stages (locked) -->
+    <div class="stage-card" style="opacity:0.45; cursor:not-allowed;">
+      <div class="stage-icon">🔥</div>
+      <div class="stage-info">
+        <div class="stage-name">灼熱の溶岩洞</div>
+        <div class="stage-meta">
+          <span class="difficulty">★★★☆</span>
+          <span class="badge badge-limited">LIMITED</span>
+        </div>
+      </div>
+      <button class="btn-play" disabled style="opacity:0.5;cursor:not-allowed;">近日公開</button>
+    </div>
+
+  </div>
+
+  <div class="menu-footer">
+    <div class="coin-display">🪙 <span id="coin-count">0</span> コイン</div>
+  </div>
+
+</div>
+
+<script>
+  // Load saved coins
+  const coins = parseInt(localStorage.getItem('oops_coins') || '0');
+  document.getElementById('coin-count').textContent = coins.toLocaleString();
+</script>
+
+</body>
+</html>
