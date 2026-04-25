@@ -1,5 +1,6 @@
 // ── OOPS! — Main game loop ───────────────────────────────────────────────────
-// LOGICAL_H = 270 は ui.js で定義済み
+
+const LOGICAL_H = 270;
 
 // ── Globals ───────────────────────────────────────────────────────────────────
 let canvas, ctx, scale, logicalW;
@@ -69,16 +70,17 @@ function setupInput() {
     keys[e.code] = true;
 
     if (gameState === 'playing') {
-      // ジャンプ: Space（メイン）/ W / ↑（サブ）
       if (e.code === 'Space' || e.code === 'KeyW' || e.code === 'ArrowUp') {
         if (wire.state === 'attached') {
+          // Jump releases wire with a slight upward boost
           const vel = wire.detach();
           if (vel) { player.vx = vel.vx; player.vy = Math.min(vel.vy - 2, -4); }
         } else {
           player.jump();
         }
-        e.preventDefault(); // Space でページスクロール防止
       }
+      // Mouse-aim shoot (F key as alternative on desktop)
+      if (e.code === 'KeyF') fireAtMouse();
     }
 
     if (e.code === 'Enter' || e.code === 'KeyR') {
@@ -166,25 +168,6 @@ function onTouchStart(e) {
   e.preventDefault();
   for (const t of e.changedTouches) {
     const { lx, ly } = toLogical(t.clientX, t.clientY);
-
-    // ── ジャンプボタン（優先判定）──────────────────────────────
-    if (lx >= logicalW / 2 && hud.jumpButton.hitTest(lx, ly, logicalW)) {
-      if (!hud.jumpButton.active) {
-        hud.jumpButton.active  = true;
-        hud.jumpButton.touchId = t.identifier;
-        if (gameState === 'playing') {
-          if (wire.state === 'attached') {
-            const vel = wire.detach();
-            if (vel) { player.vx = vel.vx; player.vy = Math.min(vel.vy - 2, -4); }
-          } else {
-            player.jump();
-          }
-        }
-      }
-      continue;
-    }
-
-    // ── スティック ──────────────────────────────────────────────
     const stick = lx < logicalW / 2 ? hud.leftStick : hud.rightStick;
     if (!stick.active) stick.onTouchStart(lx, ly, t.identifier);
   }
@@ -193,7 +176,6 @@ function onTouchStart(e) {
 function onTouchMove(e) {
   e.preventDefault();
   for (const t of e.changedTouches) {
-    if (hud.jumpButton.touchId === t.identifier) continue; // ジャンプボタンはドラッグ無視
     const { lx, ly } = toLogical(t.clientX, t.clientY);
     if (hud.leftStick.touchId  === t.identifier) hud.leftStick.onTouchMove(lx, ly);
     if (hud.rightStick.touchId === t.identifier) hud.rightStick.onTouchMove(lx, ly);
@@ -203,19 +185,11 @@ function onTouchMove(e) {
 function onTouchEnd(e) {
   e.preventDefault();
   for (const t of e.changedTouches) {
-    // ジャンプボタン
-    if (hud.jumpButton.touchId === t.identifier) {
-      hud.jumpButton.active  = false;
-      hud.jumpButton.touchId = null;
-      continue;
-    }
-    // 左スティック
     if (hud.leftStick.touchId === t.identifier) {
       hud.leftStick.onTouchEnd();
-      continue;
     }
-    // 右スティック（離したら射出）
     if (hud.rightStick.touchId === t.identifier) {
+      // Fire on right-stick release
       if (hud.rightStick.active && gameState === 'playing') {
         const dx = hud.rightStick.dx;
         const dy = hud.rightStick.dy;
@@ -320,7 +294,14 @@ function update() {
       player.moveLeft  = ldx < 0;
       player.moveRight = ldx > 0;
     }
-    // ジャンプは固定ボタン（onTouchStart）で処理するためここでは不要
+    if (hud.leftStick.checkJump()) {
+      if (wire.state === 'attached') {
+        const vel = wire.detach();
+        if (vel) { player.vx = vel.vx; player.vy = Math.min(vel.vy - 2, -4); }
+      } else {
+        player.jump();
+      }
+    }
 
     // Wire takes over position when attached
     if (wire.state === 'attached') {

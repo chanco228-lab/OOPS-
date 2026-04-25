@@ -1,8 +1,7 @@
 // HUD rendering + virtual sticks for touch input
 
-const STICK_RADIUS = 52;
-const KNOB_RADIUS  = 26;
-const LOGICAL_H    = 270; // game.js と同じ値（ui.js が先に読まれるため再宣言）
+const STICK_RADIUS   = 52;
+const KNOB_RADIUS    = 26;
 
 class VirtualStick {
   constructor(side) {
@@ -99,68 +98,12 @@ class VirtualStick {
   }
 }
 
-// ── Jump Button ──────────────────────────────────────────────────────────────
-
-const JUMP_BTN_R = 24; // radius (logical px) = 48px diameter
-
-class JumpButton {
-  constructor() {
-    this.active  = false;
-    this.touchId = null;
-  }
-
-  // 右エリア左端 + 少し上寄り（固定配置）
-  pos(logicalW) {
-    return { cx: logicalW / 2 + 50, cy: LOGICAL_H - 52 };
-  }
-
-  hitTest(lx, ly, logicalW) {
-    const { cx, cy } = this.pos(logicalW);
-    return Math.hypot(lx - cx, ly - cy) <= JUMP_BTN_R + 10; // 10px 余裕
-  }
-
-  draw(ctx, logicalW) {
-    const { cx, cy } = this.pos(logicalW);
-    const r = JUMP_BTN_R;
-
-    ctx.save();
-
-    // Drop shadow
-    ctx.globalAlpha = 0.25;
-    ctx.fillStyle   = '#1a1a1a';
-    ctx.beginPath();
-    ctx.arc(cx + 2, cy + 3, r, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Body
-    ctx.globalAlpha = this.active ? 1 : 0.85;
-    ctx.fillStyle   = this.active ? '#f0b85a' : '#FAC775';
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = 2.5;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    // ↑ arrow
-    ctx.globalAlpha  = 1;
-    ctx.fillStyle    = '#1a1a1a';
-    ctx.font         = 'bold 22px sans-serif';
-    ctx.textAlign    = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('↑', cx, cy + 1);
-
-    ctx.restore();
-  }
-}
-
 // ── HUD ─────────────────────────────────────────────────────────────────────
 
 class HUD {
   constructor() {
     this.leftStick  = new VirtualStick('left');
     this.rightStick = new VirtualStick('right');
-    this.jumpButton = new JumpButton();
   }
 
   draw(ctx, logicalW, hp, score) {
@@ -168,7 +111,6 @@ class HUD {
     this._drawScore(ctx, logicalW, score);
     this.leftStick.draw(ctx);
     this.rightStick.draw(ctx);
-    this.jumpButton.draw(ctx, logicalW);
   }
 
   _drawHP(ctx, hp) {

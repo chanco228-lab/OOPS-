@@ -1,0 +1,173 @@
+/* ── OOPS! — Shared styles ───────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --col-bg-game:    #1a1a2e;
+  --col-bg-menu:    #F5F0E8;
+  --col-yellow:     #FAC775;
+  --col-pink:       #D4537E;
+  --col-coral:      #D85A30;
+  --col-mint:       #1D9E75;
+  --col-white:      #FFFFFF;
+  --col-black:      #1a1a1a;
+  --col-red:        #E24B4A;
+}
+
+body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  background: var(--col-bg-game);
+  color: var(--col-white);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Menu page ───────────────────────────────────────────────────────────── */
+
+body.menu-page {
+  background: var(--col-bg-menu);
+  color: var(--col-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  overflow: auto;
+}
+
+.menu-wrap {
+  text-align: center;
+  padding: 32px 20px;
+  max-width: 480px;
+  width: 100%;
+}
+
+.game-title {
+  font-size: 80px;
+  font-weight: 900;
+  color: var(--col-black);
+  letter-spacing: -3px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.game-subtitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--col-pink);
+  margin-bottom: 40px;
+  letter-spacing: 0.5px;
+}
+
+/* Stage cards */
+.stage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.stage-card {
+  background: var(--col-white);
+  border: 2.5px solid var(--col-black);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 4px 4px 0 var(--col-black);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.08s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.stage-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--col-black);
+}
+
+.stage-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.stage-info {
+  flex: 1;
+  text-align: left;
+}
+
+.stage-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.stage-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge {
+  border-radius: 8px;
+  padding: 2px 8px;
+  border: 2px solid var(--col-black);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-normal  { background: var(--col-pink);  color: #fff; }
+.badge-limited { background: var(--col-coral); color: #fff; }
+
+.difficulty {
+  color: var(--col-yellow);
+  font-size: 13px;
+  letter-spacing: -1px;
+}
+
+.btn-play {
+  background: var(--col-yellow);
+  color: var(--col-black);
+  border: 2.5px solid var(--col-black);
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--col-black);
+  white-space: nowrap;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.btn-play:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--col-black);
+}
+
+/* Footer */
+.menu-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.coin-display {
+  background: var(--col-white);
+  border: 2.5px solid var(--col-black);
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: 2px 2px 0 var(--col-black);
+}

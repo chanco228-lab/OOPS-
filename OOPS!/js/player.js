@@ -15,47 +15,34 @@ class Player {
     this.h = 22;
     this.vx = 0;
     this.vy = 0;
-    this.onGround  = false;
-    this.hp        = 3;
-    this.alive     = true;
+    this.onGround = false;
+    this.hp = 3;
+    this.alive = true;
     this.deathReason = null;
-    this.color     = '#FFFFFF';
-    this.facing    = 1; // 1=right, -1=left
+    this.color = '#FFFFFF';
+    this.facing = 1; // 1=right, -1=left
 
     // Squash & stretch spring
-    this.scaleX  = 1;
-    this.scaleY  = 1;
+    this.scaleX = 1;
+    this.scaleY = 1;
     this.scaleVx = 0;
     this.scaleVy = 0;
 
     // Input state
     this.moveLeft  = false;
     this.moveRight = false;
-
-    // Jump buffer — fires within N frames of landing
-    this.jumpBuffer = 0;
   }
 
-  // Called externally: immediate if on ground, buffered if in air
   jump() {
-    if (!this.alive) return;
-    if (this.onGround) {
-      this._doJump();
-    } else {
-      this.jumpBuffer = 6; // remember for up to 6 frames
-    }
-  }
-
-  _doJump() {
-    this.vy         = JUMP_FORCE;
-    this.onGround   = false;
-    this.jumpBuffer = 0;
+    if (!this.onGround || !this.alive) return;
+    this.vy = JUMP_FORCE;
+    this.onGround = false;
     this._setScale(0.78, 1.32);
   }
 
   _setScale(sx, sy) {
-    this.scaleX  = sx;
-    this.scaleY  = sy;
+    this.scaleX = sx;
+    this.scaleY = sy;
     this.scaleVx = 0;
     this.scaleVy = 0;
   }
@@ -74,7 +61,7 @@ class Player {
   update(platforms) {
     if (!this.alive) return;
 
-    // Horizontal movement
+    // Horizontal
     if (this.moveLeft) {
       this.vx = -MOVE_SPEED;
       this.facing = -1;
@@ -82,7 +69,7 @@ class Player {
       this.vx = MOVE_SPEED;
       this.facing = 1;
     } else {
-      this.vx *= 0.82;
+      this.vx *= 0.82; // deceleration friction
     }
 
     // Gravity
@@ -95,15 +82,14 @@ class Player {
     // Left boundary
     if (this.x < 0) { this.x = 0; this.vx = 0; }
 
-    // Platform collision (top only)
+    // Platform collision (top only — stand on platforms)
     const wasOnGround = this.onGround;
     this.onGround = false;
 
     for (const p of platforms) {
       const prevBottom = this.y + this.h - this.vy;
       const inXRange   = this.x + this.w > p.x && this.x < p.x + p.w;
-      // +4px 余裕: 高速落下でもプラットフォームを踏み抜かない
-      const crossedTop = prevBottom <= p.y + 5 && this.y + this.h >= p.y;
+      const crossedTop = prevBottom <= p.y + 1 && this.y + this.h >= p.y;
 
       if (inXRange && crossedTop && this.vy >= 0) {
         this.y        = p.y - this.h;
@@ -117,21 +103,16 @@ class Player {
       this._setScale(1.38, 0.62);
     }
 
-    // Jump buffer: 着地直前に押されていたらここで発動
-    if (this.jumpBuffer > 0) {
-      this.jumpBuffer--;
-      if (this.onGround) this._doJump();
-    }
-
     this._springScale();
 
     // Fall death
     if (this.y > 340) {
-      this.alive       = false;
+      this.alive = false;
       this.deathReason = 'fall';
     }
   }
 
+  // Draw player in stage-space coordinates (camera already translated)
   draw(ctx) {
     if (!this.alive) return;
 
@@ -145,6 +126,7 @@ class Player {
     ctx.translate(cx, cy);
     ctx.scale(this.scaleX, this.scaleY);
 
+    // Body
     ctx.fillStyle   = this.color;
     ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth   = 2.5;
@@ -152,22 +134,25 @@ class Player {
     ctx.fill();
     ctx.stroke();
 
-    // Top highlight
+    // Top highlight band
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     this._roundRect(ctx, -w / 2 + 3, -h / 2 + 3, w - 6, 4, 2);
     ctx.fill();
 
     // Eyes
+    const eyeY  = 0;
     const eyeGap = 3.8;
     const eyeOffX = this.facing * 1.2;
+
     for (const ex of [-eyeGap + eyeOffX, eyeGap + eyeOffX]) {
       ctx.fillStyle = '#1a1a1a';
       ctx.beginPath();
-      ctx.arc(ex, 0, 2.5, 0, Math.PI * 2);
+      ctx.arc(ex, eyeY, 2.5, 0, Math.PI * 2);
       ctx.fill();
+      // Highlight
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.arc(ex + 0.9, -1, 1, 0, Math.PI * 2);
+      ctx.arc(ex + 0.9, eyeY - 1, 1, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -188,6 +173,7 @@ class Player {
     ctx.closePath();
   }
 
+  // Axis-aligned bounding box center
   get centerX() { return this.x + this.w / 2; }
   get centerY() { return this.y + this.h / 2; }
 }
